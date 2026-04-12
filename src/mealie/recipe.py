@@ -214,10 +214,28 @@ class RecipeMixin:
         if not filename:
             raise ValueError("Filename cannot be empty")
 
-        files = {"image": (filename, image_data)}
+        # Extract extension from filename (e.g., "image.png" -> "png")
+        import os.path
 
-        logger.info({"message": "Uploading recipe image", "slug": slug, "filename": filename})
-        return self._handle_request("PUT", f"/api/recipes/{slug}/image", files=files)
+        file_ext = os.path.splitext(filename)[1].lstrip(".")  # Remove leading dot
+
+        # Send BOTH fields like the web interface does:
+        # - image: binary file data (via files= parameter)
+        # - extension: plain text string (via data= parameter for regular form field)
+        files = {"image": (filename, image_data)}
+        data = {"extension": file_ext}
+
+        logger.info(
+            {
+                "message": "Uploading recipe image",
+                "slug": slug,
+                "filename": filename,
+                "extension": file_ext,
+            }
+        )
+        return self._handle_request(
+            "PUT", f"/api/recipes/{slug}/image", files=files, data=data
+        )
 
     def upload_recipe_asset(self, slug: str, asset_data: bytes, filename: str) -> Dict[str, Any]:
         """Upload a recipe asset file (multipart upload)

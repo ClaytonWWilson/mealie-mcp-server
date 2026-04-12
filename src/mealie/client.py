@@ -152,9 +152,19 @@ class MealieClient:
                     "error_detail": error_detail,
                 }
             )
-            logger.debug(
-                {"message": "Failed Request body", "content": e.request.content}
-            )
+            # Try to log the request body, but it may not be available for streaming requests
+            try:
+                logger.debug(
+                    {"message": "Failed Request body", "content": e.request.content}
+                )
+            except Exception as content_err:
+                # Streaming requests don't have buffered content
+                logger.debug(
+                    {
+                        "message": "Request body not available (streaming request)",
+                        "error": str(content_err),
+                    }
+                )
             raise MealieApiError(status_code, error_msg, e.response.text) from e
 
         except ReadTimeout:
