@@ -249,7 +249,7 @@ def register_recipe_tools(mcp: FastMCP, mealie: MealieFetcher) -> None:
             if prep_time is not None:
                 recipe_data["prepTime"] = prep_time
             if cook_time is not None:
-                recipe_data["cookTime"] = cook_time
+                recipe_data["performTime"] = cook_time
 
             if not recipe_data:
                 raise ValueError("At least one field must be provided to update")
