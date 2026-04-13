@@ -300,25 +300,33 @@ def register_recipe_tools(mcp: FastMCP, mealie: MealieFetcher) -> None:
             logger.debug({"message": "Error traceback", "traceback": traceback.format_exc()})
             raise ToolError(error_msg)
 
-    @mcp.tool()
-    def set_recipe_image_from_url(slug: str, image_url: str) -> Dict[str, Any]:
-        """Set a recipe's image by scraping it from a URL.
+    # @mcp.tool()
+    # def set_recipe_image_from_url(slug: str, image_url: str) -> Dict[str, Any]:
+    #     """Set a recipe's image by scraping it from a URL.
 
-        Args:
-            slug: The unique text identifier for the recipe.
-            image_url: URL of the image to scrape and use as the recipe image.
+    #     Args:
+    #         slug: The unique text identifier for the recipe.
+    #         image_url: URL of the image to scrape and use as the recipe image.
 
-        Returns:
-            Dict[str, Any]: Confirmation that the image was set.
-        """
-        try:
-            logger.info({"message": "Setting recipe image from URL", "slug": slug, "url": image_url})
-            return mealie.scrape_recipe_image_from_url(slug, image_url)
-        except Exception as e:
-            error_msg = f"Error setting recipe image from URL '{slug}': {str(e)}"
-            logger.error({"message": error_msg})
-            logger.debug({"message": "Error traceback", "traceback": traceback.format_exc()})
-            raise ToolError(error_msg)
+    #     Returns:
+    #         Dict[str, Any]: Confirmation that the image was set.
+    #     """
+    #     try:
+    #         logger.info(
+    #             {
+    #                 "message": "Setting recipe image from URL",
+    #                 "slug": slug,
+    #                 "url": image_url,
+    #             }
+    #         )
+    #         return mealie.scrape_recipe_image_from_url(slug, image_url)
+    #     except Exception as e:
+    #         error_msg = f"Error setting recipe image from URL '{slug}': {str(e)}"
+    #         logger.error({"message": error_msg})
+    #         logger.debug(
+    #             {"message": "Error traceback", "traceback": traceback.format_exc()}
+    #         )
+    #         raise ToolError(error_msg)
 
     @mcp.tool()
     def upload_recipe_image_file(slug: str, image_path: str) -> Dict[str, Any]:
