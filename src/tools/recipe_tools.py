@@ -207,7 +207,8 @@ def register_recipe_tools(mcp: FastMCP, mealie: MealieFetcher) -> None:
         name: Optional[str] = None,
         description: Optional[str] = None,
         recipe_yield: Optional[str] = None,
-        total_time: Optional[str] = None,
+        prep_time: Optional[int] = None,
+        cook_time: Optional[int] = None,
     ) -> Dict[str, Any]:
         """Partially update a recipe (only updates provided fields).
 
@@ -216,13 +217,23 @@ def register_recipe_tools(mcp: FastMCP, mealie: MealieFetcher) -> None:
             name: New name for the recipe (optional)
             description: New description for the recipe (optional)
             recipe_yield: New yield/servings for the recipe (optional)
-            total_time: New total time for the recipe (optional)
+            prep_time: Prep time in minutes (optional, must be positive integer)
+            cook_time: Cook time in minutes (optional, must be positive integer)
+                Note: totalTime is automatically calculated as prep_time + cook_time
 
         Returns:
             Dict[str, Any]: The updated recipe details.
         """
         try:
             logger.info({"message": "Patching recipe", "slug": slug})
+
+            # Validate prep_time if provided
+            if prep_time is not None and prep_time <= 0:
+                raise ValueError("prep_time must be a positive integer")
+
+            # Validate cook_time if provided
+            if cook_time is not None and cook_time <= 0:
+                raise ValueError("cook_time must be a positive integer")
 
             recipe_data = {}
             if name is not None:
@@ -231,8 +242,14 @@ def register_recipe_tools(mcp: FastMCP, mealie: MealieFetcher) -> None:
                 recipe_data["description"] = description
             if recipe_yield is not None:
                 recipe_data["recipeYield"] = recipe_yield
-            if total_time is not None:
-                recipe_data["totalTime"] = total_time
+
+            # Handle time fields - auto-calculate totalTime from prep_time + cook_time
+            if prep_time is not None or cook_time is not None:
+                recipe_data["totalTime"] = (prep_time or 0) + (cook_time or 0)
+            if prep_time is not None:
+                recipe_data["prepTime"] = prep_time
+            if cook_time is not None:
+                recipe_data["cookTime"] = cook_time
 
             if not recipe_data:
                 raise ValueError("At least one field must be provided to update")
